@@ -139,3 +139,17 @@ class BinanceClient:
 
         else:
             return None
+
+    def create_order(self, symbol, side, order_type, quantity=None):
+        param = dict()
+
+        param['symbol'] = symbol
+        param['side'] = side
+        param['type'] = order_type
+
+        if quantity is not None:
+            param['quantity'] = quantity
+
+        data = self.req('/v1/order', method='POST', data=param, auth=True, sign=True)
+
+        return data
