@@ -31,10 +31,10 @@ class BinanceClient:
         if not auth and sign:
             raise Exception('Authorization is required to perform signature request')
 
-        if auth and self.api_key:
+        if auth and not self.api_key:
             raise Exception('API Key is required for authorization request')
 
-        if sign and self.api_secret:
+        if sign and not self.api_secret:
             raise Exception('API secret is required for signature request')
 
         if method.upper() == 'POST':
