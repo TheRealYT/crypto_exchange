@@ -143,16 +143,80 @@ class BinanceClient:
         else:
             return None
 
-    def create_order(self, symbol, side, order_type, quantity=None):
+    def create_order(self, symbol, side, order_type,
+                     position_side=None,
+                     time_in_force=None,
+                     quantity=None,
+                     reduce_only=None,
+                     price=None,
+                     new_client_order_id=None,
+                     stop_price=None,
+                     close_position=None,
+                     activation_price=None,
+                     callback_rate=None,
+                     working_type=None,
+                     price_protect=None,
+                     new_order_resp_type=None,
+                     price_match=None,
+                     self_trade_prevention_mode=None,
+                     recv_window=None):
+        """
+        Implements the creation of an order,
+        for details see https://binance-docs.github.io/apidocs/futures/en/#new-order-trade or
+        https://binance-docs.github.io/apidocs/testnet/en/#new-order-trade
+        """
+
         param = dict()
+
+        order_type = order_type.upper()
+
+        if order_type == "LIMIT":
+            if time_in_force is None:
+                raise Exception('For a LIMIT order "timeInForce" is required')
+            if quantity is None:
+                raise Exception('For a LIMIT order "quantity" is required')
+            if price is None:
+                raise Exception('For a LIMIT order "price" is required')
+        elif order_type == "MARKET":
+            if quantity is None:
+                raise Exception('For a MARKET order "quantity" is required')
+        elif order_type == "STOP" or order_type == "TAKE_PROFIT":
+            if quantity is None:
+                raise Exception('For a STOP/TAKE_PROFIT	order "quantity" is required')
+            if price is None:
+                raise Exception('For a STOP/TAKE_PROFIT	order "price" is required')
+            if stop_price is None:
+                raise Exception('For a STOP/TAKE_PROFIT	order "stopPrice" is required')
+        elif order_type == "STOP_MARKET" or order_type == "TAKE_PROFIT_MARKET":
+            if stop_price is None:
+                raise Exception('For a STOP_MARKET/TAKE_PROFIT_MARKET order "stopPrice" is required"')
+        elif order_type == "TRAILING_STOP_MARKET":
+            if quantity is None:
+                raise Exception('For a TRAILING_STOP_MARKET	order "quantity" is required')
+            if callback_rate is None:
+                raise Exception('For a TRAILING_STOP_MARKET	order "callbackRate" is required')
 
         param['symbol'] = symbol
         param['side'] = side
         param['type'] = order_type
+        param['positionSide'] = position_side
+        param['timeInForce'] = time_in_force
+        param['quantity'] = quantity
+        param['reduceOnly'] = reduce_only
+        param['price'] = price
+        param['newClientOrderId'] = new_client_order_id
+        param['stopPrice'] = stop_price
+        param['closePosition'] = close_position
+        param['activationPrice'] = activation_price
+        param['callbackRate'] = callback_rate
+        param['workingType'] = working_type
+        param['priceProtect'] = price_protect
+        param['newOrderRespType'] = new_order_resp_type
+        param['priceMatch'] = price_match
+        param['selfTradePreventionMode'] = self_trade_prevention_mode
+        param['recvWindow'] = recv_window
 
-        if quantity is not None:
-            param['quantity'] = quantity
-
-        data = self.req('/v1/order', method='POST', data=param, auth=True, sign=True)
+        data = self.req('/fapi/v1/order' if self.future else '/fapi/v1/order', method='POST', data=param, auth=True,
+                        sign=True)
 
         return data
