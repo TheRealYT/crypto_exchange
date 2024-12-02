@@ -26,7 +26,7 @@ class BinanceClient:
         self.base_url = 'https://testnet.binancefuture.com' if futures else 'https://testnet.binance.vision'
 
     def req(self, path, method='GET', data=dict(), headers=dict(), auth=False, sign=False):
-        url = f'{self.base_url}{'/fapi' if self.future else '/api'}{path}'
+        url = f'{self.base_url}{path}'
 
         if not auth and sign:
             raise Exception('Authorization is required to perform signature request')
@@ -70,15 +70,15 @@ class BinanceClient:
         return client_time + self.time_diff
 
     def get_server_time(self):
-        data = self.req('/v1/time')
+        data = self.req('/fapi/v1/time' if self.future else '/api/v1/time')
         return data['serverTime']
 
     def test(self):
-        self.req('/v1/ping')
+        self.req('/fapi/v1/ping' if self.future else '/api/v1/ping')
         print("Connection successful")
 
     def get_symbols(self):
-        data = self.req('/v1/exchangeInfo')
+        data = self.req('/fapi/v1/exchangeInfo' if self.future else '/api/v1/exchangeInfo')
         return data['symbols']
 
     def filter_symbols(self, min_years=None, **kwargs):
@@ -129,7 +129,7 @@ class BinanceClient:
         if contract_type is not None:
             params['contractType'] = contract_type
 
-        data = self.req('/v1/klines', data=params)
+        data = self.req('/fapi/v1/klines' if self.future else '/api/v1/klines', data=params)
         candles = []
 
         # to fetch the timestamp, open, high, low, close, volume
