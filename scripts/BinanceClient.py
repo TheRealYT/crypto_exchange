@@ -61,7 +61,7 @@ class BinanceClient:
         res = requests.request(method, url, headers=headers, params=data)
 
         if not res.ok:
-            raise Exception(res.content)
+            raise Exception(f'{res.status_code} - {res.url} - {res.content}')
 
         return json.loads(res.content)
 
