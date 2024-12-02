@@ -220,3 +220,16 @@ class BinanceClient:
                         sign=True)
 
         return data
+
+    def cancel_order(self, symbol, order_id=None, orig_client_order_id=None, recv_window=None):
+        param = dict()
+
+        param['symbol'] = symbol
+        param['orderId'] = order_id
+        param['origClientOrderId'] = orig_client_order_id
+        param['recvWindow'] = recv_window
+
+        data = self.req('/fapi/v1/order' if self.future else '/api/v1/order', method='DELETE', data=param, auth=True,
+                        sign=True)
+
+        return data
