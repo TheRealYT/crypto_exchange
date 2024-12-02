@@ -32,3 +32,8 @@ def read(file_name):
     with open(file_path, 'r') as file:
         reader = csv.reader(file)
         return list(reader)[0]
+
+
+def exits(file_name):
+    file_path = to_db_path(file_name)
+    return path.exists(file_path)
