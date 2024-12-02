@@ -43,6 +43,9 @@ class BinanceClient:
         if auth is True:
             headers['X-MBX-APIKEY'] = self.api_key
 
+        # remove fields with missing values
+        data = {key: val for key, val in data.items() if val is not None}
+
         if sign is True:
             data['timestamp'] = int(self.current_time())
             query_string = urlencode(data)
